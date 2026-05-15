@@ -1,0 +1,36 @@
+public class ConsoleEmailSender {
+    
+    // A single method that handles both standard emails and emails with attachments
+    public static void sendEmail(String toAddress, String subject, String body, String fileName, Blob fileContent) {
+        
+        // Basic validation
+        if (String.isBlank(toAddress)) {
+            System.debug('ERROR: Recipient email address is required.');
+            return;
+        }
+
+        try {
+            // 1. Setup the Email
+            Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+            mail.setToAddresses(new String[] { toAddress });
+            mail.setSubject(subject);
+            mail.setPlainTextBody(body);
+
+            // 2. Attach File (Only if fileName and fileContent are provided)
+            if (fileContent != null && String.isNotBlank(fileName)) {
+                Messaging.EmailFileAttachment efa = new Messaging.EmailFileAttachment();
+                efa.setFileName(fileName);
+                efa.setBody(fileContent);
+                mail.setFileAttachments(new Messaging.EmailFileAttachment[] { efa });
+                System.debug('Attachment added: ' + fileName);
+            }
+
+            // 3. Send the Email
+            Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail });
+            System.debug('SUCCESS: Email sent successfully to -> ' + toAddress);
+
+        } catch (Exception e) {
+            System.debug('ERROR: Failed to send email: ' + e.getMessage());
+        }
+    }
+}

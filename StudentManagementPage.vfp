@@ -1,0 +1,53 @@
+<apex:page controller="StudentController" docType="html-5.0">
+    <apex:sectionHeader title="Student Record Management" subtitle="Manage Students"/>
+    <apex:pageMessages id="messages"/>
+
+    <!-- FORM 1: Input Fields -->
+    <apex:form id="inputForm">
+        <apex:pageBlock title="Student Details" mode="edit">
+            
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton value="Save Record" action="{!saveStudent}" reRender="inputForm, tableForm, messages"/>
+                <apex:commandButton value="Clear Form" action="{!cancelEdit}" reRender="inputForm, messages" immediate="true"/>
+            </apex:pageBlockButtons>
+
+            <apex:pageBlockSection columns="2">
+                <apex:inputField value="{!student.Name}" required="true"/>
+                <apex:inputField value="{!student.Roll_No__c}"/>
+                <apex:inputField value="{!student.Class__c}"/>
+                <apex:inputField value="{!student.Mobile_No__c}"/>
+            </apex:pageBlockSection>
+            
+        </apex:pageBlock>
+    </apex:form>
+
+    <!-- FORM 2: Data Table -->
+    <apex:form id="tableForm">
+        <apex:pageBlock title="Registered Students">
+            
+            <apex:pageBlockTable value="{!studentList}" var="stu">
+                
+                <apex:column headerValue="Action" width="100px">
+                    <apex:commandLink value="Edit" action="{!editStudent}" reRender="inputForm, messages">
+                        <apex:param name="studentIdToEdit" value="{!stu.Id}" assignTo="{!selectedStudentId}"/>
+                    </apex:commandLink>
+                    
+                    &nbsp; | &nbsp;
+                    
+                    <apex:commandLink value="Delete" action="{!deleteStudent}" reRender="tableForm, messages" 
+                                      onclick="if(!confirm('Are you sure?')) return false;">
+                        <apex:param name="studentIdToDelete" value="{!stu.Id}" assignTo="{!selectedStudentId}"/>
+                    </apex:commandLink>
+                </apex:column>
+
+                <apex:column headerValue="Student Name" value="{!stu.Name}"/>
+                <apex:column headerValue="Roll No" value="{!stu.Roll_No__c}"/>
+                <apex:column headerValue="Class" value="{!stu.Class__c}"/>
+                <apex:column headerValue="Mobile No" value="{!stu.Mobile_No__c}"/>
+                
+            </apex:pageBlockTable>
+            
+        </apex:pageBlock>
+    </apex:form>
+
+</apex:page>

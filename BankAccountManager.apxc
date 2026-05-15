@@ -1,0 +1,38 @@
+public class BankAccountManager {
+    
+    public static void addAccount(String accNo, String name, String email, Date dob, String accType) {
+        Bank_Account__c newAcc = new Bank_Account__c(
+            Account_Number__c = accNo,
+            Name = name,
+            Email__c = email,
+            Birth_Date__c = dob,
+            Account_Type__c = accType
+        );
+        insert newAcc;
+        System.debug('SUCCESS: Account Created -> ' + name);
+    }
+
+    public static void viewAccounts() {
+        List<Bank_Account__c> accList = [SELECT Account_Number__c, Name, Email__c, Birth_Date__c, Account_Type__c FROM Bank_Account__c];
+        if (accList.isEmpty()) {
+            System.debug('Bank Account Directory is Empty!!!');
+            return;
+        }
+        System.debug('--- BANK ACCOUNT DIRECTORY ---');
+        for(Bank_Account__c a : accList) {
+            System.debug('[' + a.Account_Number__c + '] ' + a.Name + ' | Type: ' + a.Account_Type__c + ' | Email: ' + a.Email__c);
+        }
+    }
+
+    public static void updateAccountType(String accNo, String newType) {
+        Bank_Account__c accToUpdate = [SELECT Id, Account_Type__c FROM Bank_Account__c WHERE Account_Number__c = :accNo LIMIT 1];
+        accToUpdate.Account_Type__c = newType;
+        update accToUpdate;
+        System.debug('SUCCESS: Account Type updated for ' + accNo);
+    }
+
+    public static void deleteAccount(String accNo) {
+        delete [SELECT Id FROM Bank_Account__c WHERE Account_Number__c = :accNo LIMIT 1];
+        System.debug('SUCCESS: Account record deleted.');
+    }
+}

@@ -1,0 +1,39 @@
+public class EmployeeManager {
+    
+    public static void addEmployee(String empId, String name, String email, Date dob, String dept) {
+        Employee__c newEmp = new Employee__c(
+            Emp_ID__c = empId,
+            Name = name,
+            Email__c = email,
+            Birth_Date__c = dob,
+            Department__c = dept
+        );
+        insert newEmp;
+        System.debug('SUCCESS: Employee Added -> ' + name);
+    }
+
+    public static void viewAllEmployees() {
+        List<Employee__c> empList = [SELECT Emp_ID__c, Name, Email__c, Birth_Date__c, Department__c FROM Employee__c];
+        if (empList.isEmpty()) {
+            System.debug('Employee Directory is Empty !!!');
+            return;
+        }
+        System.debug('--- EMPLOYEE DIRECTORY ---');
+        for(Employee__c e : empList) {
+            System.debug('[' + e.Emp_ID__c + '] ' + e.Name + ' | Dept: ' + e.Department__c + ' | Email: ' + e.Email__c);
+        }
+    }
+
+    public static void updateDepartment(String empId, String newDept) {
+        Employee__c empToUpdate = [SELECT Id, Department__c FROM Employee__c WHERE Emp_ID__c = :empId LIMIT 1];
+        empToUpdate.Department__c = newDept;
+        update empToUpdate;
+        System.debug('SUCCESS: Department updated for ID ' + empId);
+    }
+
+    public static void deleteEmployee(String empId) {
+        Employee__c empToDelete = [SELECT Id FROM Employee__c WHERE Emp_ID__c = :empId LIMIT 1];
+        delete empToDelete;
+        System.debug('SUCCESS: Employee record deleted.');
+    }
+}

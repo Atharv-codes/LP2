@@ -1,0 +1,53 @@
+public class StudentController {
+    
+    public Student__c student { get; set; }
+    public List<Student__c> studentList { get; set; }
+    public Id selectedStudentId { get; set; }
+
+    public StudentController() {
+        student = new Student__c(); 
+        fetchStudents();            
+    }
+
+    public void fetchStudents() {
+        studentList = [SELECT Id, Name, Roll_No__c, Class__c, Mobile_No__c 
+                       FROM Student__c 
+                       ORDER BY CreatedDate DESC 
+                       LIMIT 100];
+    }
+
+    public PageReference saveStudent() {
+        try {
+            upsert student; 
+            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.CONFIRM, 'Record saved successfully!'));
+            student = new Student__c(); 
+            fetchStudents(); 
+        } catch (Exception e) {
+            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, e.getMessage()));
+        }
+        return null; 
+    }
+
+    public PageReference editStudent() {
+        student = [SELECT Id, Name, Roll_No__c, Class__c, Mobile_No__c 
+                   FROM Student__c 
+                   WHERE Id = :selectedStudentId LIMIT 1];
+        return null;
+    }
+
+    public PageReference deleteStudent() {
+        try {
+            delete [SELECT Id FROM Student__c WHERE Id = :selectedStudentId LIMIT 1];
+            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.CONFIRM, 'Record deleted.'));
+            fetchStudents(); 
+        } catch (Exception e) {
+            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, e.getMessage()));
+        }
+        return null;
+    }
+    
+    public PageReference cancelEdit() {
+        student = new Student__c();
+        return null;
+    }
+}

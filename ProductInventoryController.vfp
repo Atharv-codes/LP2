@@ -1,0 +1,44 @@
+<apex:page controller="ProductInventoryController" docType="html-5.0">
+    <apex:sectionHeader title="Inventory Management" subtitle="Manage Products"/>
+    <apex:pageMessages id="messages"/>
+
+    <apex:form id="inputForm">
+        <apex:pageBlock title="Product Details" mode="edit">
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton value="Save Product" action="{!saveProduct}" reRender="inputForm, tableForm, messages"/>
+                <apex:commandButton value="Clear Form" action="{!cancelEdit}" reRender="inputForm, messages" immediate="true"/>
+            </apex:pageBlockButtons>
+
+            <apex:pageBlockSection columns="2">
+                <apex:inputField value="{!product.Name}" required="true"/>
+                <apex:inputField value="{!product.Serial_No__c}"/>
+                <apex:inputField value="{!product.Manufacture_Date__c}"/>
+                <apex:inputField value="{!product.Expiry_Date__c}"/>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+
+    <apex:form id="tableForm">
+        <apex:pageBlock title="Product Inventory">
+            <apex:pageBlockTable value="{!productList}" var="prod">
+                
+                <apex:column headerValue="Action" width="100px">
+                    <apex:commandLink value="Edit" action="{!editProduct}" reRender="inputForm, messages">
+                        <apex:param name="productIdToEdit" value="{!prod.Id}" assignTo="{!selectedProductId}"/>
+                    </apex:commandLink>
+                    &nbsp; | &nbsp;
+                    <apex:commandLink value="Delete" action="{!deleteProduct}" reRender="tableForm, messages" 
+                                      onclick="if(!confirm('Delete this product?')) return false;">
+                        <apex:param name="productIdToDelete" value="{!prod.Id}" assignTo="{!selectedProductId}"/>
+                    </apex:commandLink>
+                </apex:column>
+
+                <apex:column headerValue="Product Name" value="{!prod.Name}"/>
+                <apex:column headerValue="Serial No" value="{!prod.Serial_No__c}"/>
+                <apex:column headerValue="Manufacture Date" value="{!prod.Manufacture_Date__c}"/>
+                <apex:column headerValue="Expiry Date" value="{!prod.Expiry_Date__c}"/>
+                
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>
